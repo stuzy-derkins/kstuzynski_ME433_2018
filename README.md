@@ -1,1 +1,3 @@
-# kstuzynski_ME433_2018
+Kristen Stuzynski
+4/8/2018
+This repository has everything I'm learning in 433! 
