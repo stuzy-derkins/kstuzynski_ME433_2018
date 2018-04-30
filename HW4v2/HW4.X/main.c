@@ -1,3 +1,20 @@
+//#include "NU32.h"       // constants, funcs for startup and UART
+
+#include <math.h> 	//for sine wave plotting
+#include "spi.h"
+
+// Demonstrates spi by accessing MCP4912 chip
+// PIC is the master, MCP is the slave
+// Uses microchip MCP4912 chip (see the data sheet for protocol details)
+// SDO1 -> SI (pin 2 -> pin 55)
+// SDI1 -> SO (pin  -> pin ) NO SDO on this chip!
+// SCK1 -> SCK (pin 25 -> pin 4)
+// SS1 -> CS (pin 3 -> pin 3)
+//
+
+//#define CS LATAbits.LATA1       // chip select pin
+
+    
 #include<xc.h>           // processor SFR definitions
 #include<sys/attribs.h>  // __ISR macro
 
@@ -58,13 +75,18 @@ int main() {
     TRISBbits.TRISB4 = 1;   //makes pin B4 with button an input
     
     LATA = 0;               //clears all outputs on A to low
-    LATAbits.LATA4 = 1;     //makes A4 output low
+    LATAbits.LATA4 = 0;     //makes A4 output low
+    
+    RPA1Rbits.RPA1R = 0b0011;     //assigns SDO1 to pin A1
+    RPA0Rbits.RPA0R = 0b0011;     //assigns SS1 to pin A0
+ 
+    initSPI1();
     
     __builtin_enable_interrupts();
 
     _CP0_SET_COUNT(0);
     
-    while(1) {
+    /*while(1) {
 	// use _CP0_SET_COUNT(0) and _CP0_GET_COUNT() to test the PIC timing
 	// remember the core timer runs at half the sysclk
         //LATAbits.LATA4 = 0
@@ -77,5 +99,22 @@ int main() {
             if(LATAbits.LATA4 = 1){
                 LATAbits.LATA4 = 0;
             }
+    }*/
+    
+ 
+    while(1) {
+        int i = 0;
+        _CP0_SET_COUNT(0); 
+        float f = 512 + 512*sin(i*2*3.1415/1000*10);  //should make a 10Hz sin wave)
+        setVoltage(0, f);
+        i++;
+
+        //setVoltage(0,512);		//test
+        //setVoltage(1,256);		//test
+
+        while(_CP0_GET_COUNT() < 2400000) {
+            LATAbits.LATA4 = !LATAbits.LATA4;
+        }  
     }
+  return 0;
 }
