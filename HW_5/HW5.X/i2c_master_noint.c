@@ -74,4 +74,5 @@ char getExpander(void) {
     unsigned char recv = i2c_master_recv(); // save the value returned
     i2c_master_ack(1);                // make the ack so the slave knows we got it
     i2c_master_stop();                // make the stop bit
+    return recv;
 }

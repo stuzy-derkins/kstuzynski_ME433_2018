@@ -76,14 +76,17 @@ int main() {
     __builtin_enable_interrupts();
  
     while(1) {
-        if(getExpander()==0){
-            setExpander(0x0A, 0b0000001);
+        _CP0_SET_COUNT(0);
+        LATAbits.LATA4 = !LATAbits.LATA4;
+                
+        if((getExpander() & 0b10000000) == 0b10000000){
+            setExpander(0x0A, 0b00000000);
         } else {
-            setExpander(0x0A, 0b0000000);
+            setExpander(0x0A, 0b00000001);
         }
         
-        while(_CP0_GET_COUNT() < 2400000) {
-            LATAbits.LATA4 = !LATAbits.LATA4;
+        while(_CP0_GET_COUNT() < 4800000) {
+            ;
         }  
     }
 }
